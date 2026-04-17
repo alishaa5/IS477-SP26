@@ -53,9 +53,9 @@ Overall, these challenges slowed us down at first, but they helped us better und
 
 Individual Contributions
 
-Jalen worked on the data cleaning and merging process. This included writing the Python script, selecting relevant columns, handling missing values, and creating the final merged dataset. Jalen also ensured that the dataset is structured correctly for future analysis.
+Archana worked on the data cleaning and merging process. This included writing the Python script, selecting relevant columns, handling missing values, and creating the final merged dataset. Archana also ensured that the dataset is structured correctly for future analysis.
 
-My partner worked on data acquisition and initial exploration. This included identifying the datasets, understanding what each variable represents, and helping decide which columns should be included in the final dataset. They also reviewed the merged dataset to make sure everything looked correct.
+Alisha worked on data acquisition and initial exploration. This included identifying the datasets, understanding what each variable represents, and helping decide which columns should be included in the final dataset. Alisha also reviewed the merged dataset to make sure everything looked correct.
 
 Both team members contributed to discussing challenges and making decisions about how to clean and merge the data. All contributions are reflected in the Git commit history.
 
