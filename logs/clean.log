@@ -1,0 +1,17 @@
+  WARNING: columns not found and will be skipped: ['CNTLAFFI', 'CALSYS', 'OPENADMP']
+  WARNING: columns not found and will be skipped: ['CONTROL', 'LOCALE', 'INSTSIZE', 'HBCU', 'LANDGRNT']
+=== clean.py: cleaning raw datasets ===
+
+  Reading scorecard: data/raw/Most-Recent-Cohorts-Institution.csv
+    Raw shape: (6322, 3308)
+    Dropped 3115 rows with missing key numeric values.
+    Dropped 0 duplicate UNITID rows.
+    Cleaned shape: (3207, 12)
+  Reading IPEDS characteristics: data/raw/HD2023.csv
+    Raw shape: (6163, 73)
+    Cleaned shape: (6163, 1)
+  Reading IPEDS financial aid: data/raw/sfa2223.csv
+    Raw shape: (5653, 691)
+    Cleaned shape: (5653, 1)
+
+=== clean.py complete ===

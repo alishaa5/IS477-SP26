@@ -1,0 +1,10 @@
+=== acquire.py: downloading raw datasets ===
+
+  Already present: data/raw/scorecard.zip  (sha256: 7339f051879e8481b101d2c6fc90b3cf957593bf71f8f9a14fef513e88821e2d)
+  Extracted Most-Recent-Cohorts-Institution.csv → data/raw/Most-Recent-Cohorts-Institution.csv
+  Already present: data/raw/ipeds_characteristics.zip  (sha256: e11d35af6f50fbe2f51d8ddd5a9d4f49860abbab7d73beae1f8524f13ad8945b)
+  Extracted HD2023.csv → data/raw/HD2023.csv
+  Already present: data/raw/ipeds_financial_aid.zip  (sha256: 144f97dc24492febc772e2aed6c7eb543037ed56274a49cbae0e743cf717e2df)
+  Extracted sfa2223.csv → data/raw/sfa2223.csv
+
+=== acquire.py complete ===

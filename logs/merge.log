@@ -1,0 +1,14 @@
+=== merge.py: integrating cleaned datasets ===
+
+  Scorecard rows:       3,207
+  IPEDS chars rows:     6,163
+  IPEDS aid rows:       5,653
+
+  Merged rows:          3,207
+  Columns:              12
+  IPEDS chars matched:  0 / 3,207
+  IPEDS aid matched:    0 / 3,207
+
+  Saved → data/merged/merged_dataset.csv
+
+=== merge.py complete ===
