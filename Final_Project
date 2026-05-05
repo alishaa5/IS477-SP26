@@ -261,3 +261,4 @@ This project aligns with the **USGS Data Lifecycle** model as discussed in class
 **Alisha Agrawal** was primarily responsible for data acquisition, variable selection, the `acquire.py` script, the `analyze.py` visualization script, and report writing. Alisha also coordinated the Snakemake workflow configuration and final documentation.
 
 Both team members contributed to research question development, result interpretation, and review of all written sections. Individual contributions are evidenced in the Git commit history.
+Add final project README
