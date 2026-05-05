@@ -24,7 +24,7 @@ Our workflow proceeds through five stages: data acquisition (`acquire.py`), data
 
 Key findings indicate that private nonprofit institutions tend to produce graduates with higher median earnings than public or for-profit institutions, though this pattern interacts with student debt levels and institution type. The data also reveals that the majority of institutions where graduates earn more than their median debt are four-year institutions, while many for-profit schools show unfavorable debt-to-earnings ratios. These findings suggest that cost alone is not a reliable signal of financial return on investment in higher education.
 
----
+
 
 ## Data Profile
 
@@ -78,7 +78,6 @@ All three datasets are linked using the `UNITID` variable, which is the federal 
 
 The datasets span different collection periods: the College Scorecard uses the most recent cohort release (March 2026), IPEDS Characteristics uses the 2023 survey cycle (HD2023), and IPEDS Financial Aid uses the 2022–23 survey year (SFA2223). Temporal alignment is approximate; all datasets represent the most recently available data for their respective domains.
 
----
 
 ## Data Quality
 
@@ -96,7 +95,6 @@ Data quality assessment was performed across all three datasets prior to integra
 
 **Outliers:** Summary statistics were computed for all key numeric variables. Some institutions report extremely high or low tuition figures (e.g., $0 tuition for certain public military institutions, or very high tuition for specialized graduate institutions). These values are valid and retained; they are visible in the box plot visualizations.
 
----
 
 ## Data Cleaning
 
@@ -114,7 +112,6 @@ Data cleaning is implemented in `clean.py` and operates on the raw CSV files ext
 
 These operations are all implemented programmatically and are fully reproducible by running `clean.py` (or via the Snakemake workflow).
 
----
 
 ## Findings
 
@@ -128,7 +125,6 @@ These operations are all implemented programmatically and are fully reproducible
 
 **Top and bottom institutions:** The top 10 institutions by median earnings 10 years post-enrollment (`results/tables/top10_earnings.csv`) are dominated by highly selective private nonprofit universities and specialized professional schools (e.g., medical and engineering institutions). The bottom 10 (`results/tables/bottom10_earnings.csv`) are predominantly for-profit certificate and associate-degree programs. Summary statistics for all key variables are in `results/tables/summary_statistics.csv`.
 
----
 
 ## Future Work
 
@@ -144,7 +140,6 @@ Several directions could strengthen and extend this analysis:
 
 **Geographic analysis:** Adding geographic visualizations (e.g., choropleth maps by state) would make the findings more accessible and could reveal regional patterns in ROI.
 
----
 
 ## Challenges
 
@@ -158,7 +153,6 @@ Several directions could strengthen and extend this analysis:
 
 **Temporal alignment:** The three datasets come from slightly different survey years, which introduces minor inconsistencies (e.g., tuition figures from one year joined to earnings data from a different cohort). This is a known limitation of working with administrative data and is documented in the Data Profile section above.
 
----
 
 ## Reproducing
 
@@ -210,7 +204,6 @@ python analyze.py       # Generates figures in results/figures/ and tables in re
 
 **Note on data files:** The raw data files are large and are downloaded programmatically by `acquire.py` directly from the College Scorecard and NCES servers. Internet access is required for the acquisition step. Checksums are printed to the console during download for integrity verification.
 
----
 
 ## References
 
@@ -229,7 +222,6 @@ python analyze.py       # Generates figures in results/figures/ and tables in re
 - Mölder, F., et al. (2021). Sustainable data analysis with Snakemake. *F1000Research*, 10, 33. [snakemake](https://snakemake.readthedocs.io/)
 - Harris, C. R., et al. (2020). Array programming with NumPy. *Nature*, 585, 357–362. [numpy](https://numpy.org/)
 
----
 
 ## Data Lifecycle
 
@@ -245,14 +237,12 @@ This project aligns with the **USGS Data Lifecycle** model as discussed in class
 | Preserve | Git/GitHub repository with tagged releases |
 | Publish/Share | Public GitHub repository |
 
----
 
 ## Licenses
 
 - **Data:** All datasets used are publicly released by the U.S. federal government and are in the public domain. No redistribution restrictions apply.
 - **Code:** All scripts in this repository are released under the [MIT License](LICENSE).
 
----
 
 ## Contribution Statement
 
