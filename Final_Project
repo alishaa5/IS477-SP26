@@ -1,0 +1,263 @@
+# College Tuition and Post-Graduation Outcomes: Analyzing the Financial Return on Higher Education
+
+## Contributors
+
+- **Alisha Agrawal** (University of Illinois Urbana-Champaign, IS 477, Spring 2026)
+- **Archana Nanthikattu** (University of Illinois Urbana-Champaign, IS 477, Spring 2026)
+
+---
+
+## Summary
+
+Higher education is one of the largest financial investments that individuals make in their lifetimes, yet many students make enrollment decisions with limited information about whether higher tuition actually translates to better financial outcomes after graduation. This project investigates the relationship between college tuition costs and post-graduation career outcomes for institutions across the United States.
+
+The central research questions guiding this project are:
+
+1. **Is there a relationship between tuition cost and median earnings after graduation?**
+2. **How does student debt relate to post-graduate earnings?**
+3. **Do certain types of institutions provide stronger financial outcomes relative to tuition costs?**
+4. **How do institutional characteristics (e.g., public vs. private, institution level) influence graduate financial outcomes?**
+
+To answer these questions, we integrated three complementary federal datasets — the U.S. Department of Education's College Scorecard, the IPEDS Institutional Characteristics file, and the IPEDS Student Financial Aid file — using the shared `UNITID` identifier that uniquely identifies each institution.
+
+Our workflow proceeds through five stages: data acquisition (`acquire.py`), data cleaning (`clean.py`), dataset integration (`merge.py`), analysis and visualization (`analyze.py`), and end-to-end automation via Snakemake (`Snakefile`). All stages are reproducible from a single command.
+
+Key findings indicate that private nonprofit institutions tend to produce graduates with higher median earnings than public or for-profit institutions, though this pattern interacts with student debt levels and institution type. The data also reveals that the majority of institutions where graduates earn more than their median debt are four-year institutions, while many for-profit schools show unfavorable debt-to-earnings ratios. These findings suggest that cost alone is not a reliable signal of financial return on investment in higher education.
+
+---
+
+## Data Profile
+
+### Dataset 1: College Scorecard — Most Recent Cohorts (Institution-Level)
+
+- **Source:** U.S. Department of Education, College Scorecard ([https://collegescorecard.ed.gov/data/](https://collegescorecard.ed.gov/data/))
+- **File acquired:** `Most-Recent-Cohorts-Institution_03232026.zip` → extracted CSV stored at `data/raw/`
+- **Format:** CSV, wide-format; one row per institution
+- **Key variables used:**
+  - `UNITID` — unique institution identifier (join key)
+  - `INSTNM` — institution name
+  - `STABBR` — state abbreviation
+  - `CONTROL` — institution control type (1=Public, 2=Private Nonprofit, 3=Private For-Profit)
+  - `ICLEVEL` — institution level (1=4-year, 2=2-year, 3=less-than-2-year)
+  - `TUITIONFEE_IN` — in-state tuition and fees
+  - `TUITIONFEE_OUT` — out-of-state tuition and fees
+  - `DEBT_MDN` — median cumulative loan debt at graduation
+  - `MD_EARN_WNE_P10` — median earnings of students working and not enrolled 10 years after entry
+- **Ethical/legal constraints:** Data is publicly available from a federal government source. No personally identifiable information is included — all values are institution-level aggregates. Some values are suppressed for privacy (reported as `"PrivacySuppressed"`) when the underlying cell size is too small to report without risking re-identification.
+- **Relevance to questions:** This dataset is the primary source for both the cost side (tuition, debt) and outcome side (earnings) of the analysis, making it central to all four research questions.
+
+### Dataset 2: IPEDS Institutional Characteristics (HD2023)
+
+- **Source:** National Center for Education Statistics, IPEDS Data Center ([https://nces.ed.gov/ipeds/datacenter/data/HD2023.zip](https://nces.ed.gov/ipeds/datacenter/data/HD2023.zip))
+- **File acquired:** `ipeds_characteristics.zip` → extracted CSV stored at `data/raw/`
+- **Format:** CSV, one row per institution
+- **Key variables used:**
+  - `UNITID` — join key
+  - `INSTNM` — institution name
+  - `CITY`, `STABBR` — geographic identifiers
+  - `CONTROL` — institution control type
+  - `ICLEVEL` — institution level
+- **Ethical/legal constraints:** Publicly released federal survey data from NCES. No restrictions on use beyond proper citation.
+- **Relevance to questions:** Provides authoritative institutional classification and geographic context for interpreting variation in tuition and earnings outcomes across institution types.
+
+### Dataset 3: IPEDS Student Financial Aid (SFA2223)
+
+- **Source:** National Center for Education Statistics, IPEDS Data Center ([https://nces.ed.gov/ipeds/datacenter/data/SFA2223.zip](https://nces.ed.gov/ipeds/datacenter/data/SFA2223.zip))
+- **File acquired:** `ipeds_financial_aid.zip` → extracted CSV stored at `data/raw/`
+- **Format:** CSV, one row per institution
+- **Key variables used:**
+  - `UNITID` — join key
+  - `FLOAN_A` — total dollar amount of federal loans distributed
+  - Net price and aid distribution variables
+- **Ethical/legal constraints:** Publicly released federal survey data from NCES. No restrictions on use beyond proper citation.
+- **Relevance to questions:** Complements the debt and tuition data from the Scorecard by providing information on whether institutions distribute federal financial aid, which connects to research question 2 and 3.
+
+### Dataset Integration
+
+All three datasets are linked using the `UNITID` variable, which is the federal standard unique identifier for postsecondary institutions and is consistent across all NCES and Department of Education data products. The College Scorecard serves as the left anchor table; IPEDS Characteristics and IPEDS Financial Aid are joined to it via left joins on `UNITID` (after standardizing the column to string type across all sources). The integrated dataset is stored at `data/merged/merged_dataset.csv`.
+
+The datasets span different collection periods: the College Scorecard uses the most recent cohort release (March 2026), IPEDS Characteristics uses the 2023 survey cycle (HD2023), and IPEDS Financial Aid uses the 2022–23 survey year (SFA2223). Temporal alignment is approximate; all datasets represent the most recently available data for their respective domains.
+
+---
+
+## Data Quality
+
+Data quality assessment was performed across all three datasets prior to integration. The following issues were identified and documented:
+
+**Missing values:** All three datasets contained substantial missing data for certain financial variables. The College Scorecard in particular uses `"PrivacySuppressed"` as a placeholder for cells where reporting the true value would risk re-identification of small student populations. These suppressed values were treated as missing (`NaN`) before any numeric operations.
+
+**Data type inconsistencies:** Key financial columns in the College Scorecard (`TUITIONFEE_IN`, `TUITIONFEE_OUT`, `DEBT_MDN`, `MD_EARN_WNE_P10`) were read as object (string) type due to the presence of `"PrivacySuppressed"` values. These were explicitly coerced to numeric using `pd.to_numeric(..., errors='coerce')`, which converts non-numeric strings to `NaN`.
+
+**UNITID format inconsistencies:** Across the three datasets, `UNITID` was stored as integer in some files and string in others. This was standardized to string type before merging to prevent silent type mismatches that would result in failed joins.
+
+**Duplicate records:** No duplicate UNITID values were found within any individual dataset after loading. Post-merge duplicates were checked and none were present.
+
+**Coverage gaps:** Not all institutions report all variables. After dropping rows missing values in the core financial variables (`TUITIONFEE_IN`, `DEBT_MDN`, `MD_EARN_WNE_P10`), the working analysis dataset is a subset of the full merged table. This filtering prioritizes completeness over coverage and is documented in `clean.py`.
+
+**Outliers:** Summary statistics were computed for all key numeric variables. Some institutions report extremely high or low tuition figures (e.g., $0 tuition for certain public military institutions, or very high tuition for specialized graduate institutions). These values are valid and retained; they are visible in the box plot visualizations.
+
+---
+
+## Data Cleaning
+
+Data cleaning is implemented in `clean.py` and operates on the raw CSV files extracted by `acquire.py`. The following operations were applied:
+
+**1. Handling `"PrivacySuppressed"` values:** All occurrences of the string `"PrivacySuppressed"` in the College Scorecard data were replaced with `NaN` using `df.replace("PrivacySuppressed", np.nan)`. This was the most pervasive data quality issue and affected the majority of financial columns. Keeping these as strings would have caused all downstream numeric operations to fail silently.
+
+**2. Numeric type conversion:** After suppressed value replacement, the columns `TUITIONFEE_IN`, `TUITIONFEE_OUT`, `DEBT_MDN`, and `MD_EARN_WNE_P10` were converted from object to float using `pd.to_numeric(..., errors='coerce')`. Rows where conversion failed (non-numeric residuals) were coerced to `NaN`.
+
+**3. UNITID standardization:** The `UNITID` column was cast to string type (`df['UNITID'] = df['UNITID'].astype(str)`) in each of the three datasets before merging. This ensures consistent join behavior regardless of how each source encodes the identifier.
+
+**4. Column selection:** Only the variables relevant to our research questions were retained from each dataset to reduce memory usage and keep the merged dataset interpretable. The specific column lists are defined in `clean.py`.
+
+**5. Row filtering:** After merging, rows missing values in all three core outcome variables (`TUITIONFEE_IN`, `DEBT_MDN`, `MD_EARN_WNE_P10`) were dropped. This decision was made to ensure that only institutions with complete financial profiles are included in the analysis, reducing the risk of misleading summary statistics or visualizations. Imputation was considered but rejected to avoid introducing assumptions about the missing data mechanism.
+
+These operations are all implemented programmatically and are fully reproducible by running `clean.py` (or via the Snakemake workflow).
+
+---
+
+## Findings
+
+**Earnings by institution control type:** Private nonprofit institutions have the highest median earnings 10 years post-enrollment, followed by public institutions, with private for-profit institutions showing the lowest median earnings. This pattern holds even after controlling for broad institutional level. The bar chart (`results/figures/earnings_by_control.png`) visualizes this difference.
+
+**Student debt vs. earnings:** The scatter plot (`results/figures/debt_vs_earnings.png`) reveals that the majority of institutions fall above the 1:1 debt-equals-earnings reference line, meaning that median earnings exceed median debt for most graduates. However, a meaningful cluster of private for-profit institutions falls at or below this line, indicating that graduates from these schools often carry debt comparable to or exceeding their annual earnings at the 10-year mark. Public and private nonprofit institutions cluster more favorably.
+
+**Tuition distribution by institution level:** Four-year institutions show dramatically higher and more variable in-state tuition than two-year institutions, as shown in the box plot (`results/figures/tuition_distribution.png`). Two-year institutions are considerably more affordable and show tighter distributions. Less-than-2-year institutions are low-cost but also show low earnings outcomes.
+
+**Federal aid availability and earnings:** Institutions where federal loans are distributed to students are associated with modestly higher median earnings compared to institutions where no federal loan activity is recorded, which largely reflects the fact that many no-aid institutions are small specialized or for-profit schools (`results/figures/aid_vs_earnings.png`).
+
+**Top and bottom institutions:** The top 10 institutions by median earnings 10 years post-enrollment (`results/tables/top10_earnings.csv`) are dominated by highly selective private nonprofit universities and specialized professional schools (e.g., medical and engineering institutions). The bottom 10 (`results/tables/bottom10_earnings.csv`) are predominantly for-profit certificate and associate-degree programs. Summary statistics for all key variables are in `results/tables/summary_statistics.csv`.
+
+---
+
+## Future Work
+
+Several directions could strengthen and extend this analysis:
+
+**Longitudinal analysis:** The current analysis uses a single point-in-time snapshot. Tracking how the tuition-to-earnings ratio has changed over time for the same institutions would provide stronger evidence about trends and could identify whether the financial return on higher education is improving or declining.
+
+**Field of study disaggregation:** The College Scorecard also provides earnings data broken down by field of study. Incorporating this dimension would allow for comparisons like engineering vs. humanities at the same institution, which would be more actionable for students making enrollment decisions.
+
+**Net price vs. sticker price:** We primarily used published tuition figures. Net price (after financial aid) would give a more accurate picture of the actual financial burden faced by students. The IPEDS Financial Aid dataset contains net price by income category, which could be incorporated in a more granular model.
+
+**Causal inference considerations:** Our analysis identifies correlations between tuition, debt, and earnings. However, selection effects are strong: high-earning graduates may have attended high-tuition schools partly because of pre-existing socioeconomic advantage, not solely because of what they learned. Future work could attempt to address selection via instrumental variable approaches or by controlling for selectivity measures.
+
+**Geographic analysis:** Adding geographic visualizations (e.g., choropleth maps by state) would make the findings more accessible and could reveal regional patterns in ROI.
+
+---
+
+## Challenges
+
+**Privacy suppression in the College Scorecard:** The most significant technical challenge was the `"PrivacySuppressed"` placeholder. Because it appeared in numeric columns, it caused pandas to read those columns as object type, which silently prevented any numeric computation until explicitly handled. Diagnosing this required careful inspection of `.dtypes` and `.unique()` outputs.
+
+**UNITID type mismatches across datasets:** The three datasets encoded `UNITID` differently (integer vs. string), which caused silent merge failures when left as-is — the merge would complete without errors but produce no matching rows. Discovering this required checking the shapes of intermediate join results and inspecting the raw column types.
+
+**Column naming inconsistencies:** Some column names in the IPEDS files differed in capitalization or had trailing whitespace compared to what the documentation described. This required using `.str.strip()` and `.str.upper()` normalization before column selection.
+
+**Dataset size:** The raw College Scorecard CSV contains several thousand columns. Loading and manipulating this file in pandas required careful use of `usecols` to avoid memory issues during development on local machines.
+
+**Temporal alignment:** The three datasets come from slightly different survey years, which introduces minor inconsistencies (e.g., tuition figures from one year joined to earnings data from a different cohort). This is a known limitation of working with administrative data and is documented in the Data Profile section above.
+
+---
+
+## Reproducing
+
+Follow these steps to reproduce the complete workflow from data acquisition through results:
+
+**Prerequisites:**
+
+```
+Python >= 3.9
+pip install -r requirements.txt
+snakemake >= 7.0
+```
+
+**Step 1 — Clone the repository:**
+```bash
+git clone https://github.com/alishaa5/IS477-SP26.git
+cd IS477-SP26
+```
+
+**Step 2 — Install dependencies:**
+```bash
+pip install -r requirements.txt
+```
+
+**Step 3 — Run the full workflow with Snakemake (recommended):**
+```bash
+snakemake --cores 1
+```
+This will automatically execute `acquire.py` → `clean.py` → `merge.py` → `analyze.py` in the correct order and deposit all outputs into `data/` and `results/`.
+
+**Step 4 — Alternatively, run scripts manually in order:**
+```bash
+python acquire.py       # Downloads raw datasets to data/raw/
+python clean.py         # Cleans and prepares each dataset
+python merge.py         # Merges datasets into data/merged/merged_dataset.csv
+python analyze.py       # Generates figures in results/figures/ and tables in results/tables/
+```
+
+**Expected outputs:**
+- `data/raw/` — raw ZIP and extracted CSV files from all three sources
+- `data/merged/merged_dataset.csv` — the integrated dataset
+- `results/figures/earnings_by_control.png`
+- `results/figures/debt_vs_earnings.png`
+- `results/figures/tuition_distribution.png`
+- `results/figures/aid_vs_earnings.png`
+- `results/tables/summary_statistics.csv`
+- `results/tables/top10_earnings.csv`
+- `results/tables/bottom10_earnings.csv`
+
+**Note on data files:** The raw data files are large and are downloaded programmatically by `acquire.py` directly from the College Scorecard and NCES servers. Internet access is required for the acquisition step. Checksums are printed to the console during download for integrity verification.
+
+---
+
+## References
+
+**Datasets:**
+
+- U.S. Department of Education. *College Scorecard Institution-Level Data, Most Recent Cohorts (March 2026)*. [https://collegescorecard.ed.gov/data/](https://collegescorecard.ed.gov/data/). Accessed May 2026.
+
+- National Center for Education Statistics. *IPEDS Institutional Characteristics Survey, 2023* (HD2023). [https://nces.ed.gov/ipeds/datacenter/data/HD2023.zip](https://nces.ed.gov/ipeds/datacenter/data/HD2023.zip). Accessed May 2026.
+
+- National Center for Education Statistics. *IPEDS Student Financial Aid and Net Price Survey, 2022–23* (SFA2223). [https://nces.ed.gov/ipeds/datacenter/data/SFA2223.zip](https://nces.ed.gov/ipeds/datacenter/data/SFA2223.zip). Accessed May 2026.
+
+**Software:**
+
+- McKinney, W. (2010). Data Structures for Statistical Computing in Python. *Proceedings of the 9th Python in Science Conference*, 51–56. [pandas](https://pandas.pydata.org/)
+- Hunter, J. D. (2007). Matplotlib: A 2D graphics environment. *Computing in Science & Engineering*, 9(3), 90–95. [matplotlib](https://matplotlib.org/)
+- Mölder, F., et al. (2021). Sustainable data analysis with Snakemake. *F1000Research*, 10, 33. [snakemake](https://snakemake.readthedocs.io/)
+- Harris, C. R., et al. (2020). Array programming with NumPy. *Nature*, 585, 357–362. [numpy](https://numpy.org/)
+
+---
+
+## Data Lifecycle
+
+This project aligns with the **USGS Data Lifecycle** model as discussed in class. The stages map to our workflow as follows:
+
+| Lifecycle Stage | Project Artifact |
+|---|---|
+| Plan | `ProjectPlan.md` |
+| Acquire | `acquire.py` |
+| Process (clean) | `clean.py` |
+| Integrate | `merge.py` |
+| Analyze | `analyze.py` |
+| Preserve | Git/GitHub repository with tagged releases |
+| Publish/Share | Public GitHub repository |
+
+---
+
+## Licenses
+
+- **Data:** All datasets used are publicly released by the U.S. federal government and are in the public domain. No redistribution restrictions apply.
+- **Code:** All scripts in this repository are released under the [MIT License](LICENSE).
+
+---
+
+## Contribution Statement
+
+**Archana Nanthikattu** was primarily responsible for data cleaning, dataset merging, exploratory data analysis scripting, and the `clean.py` and `merge.py` scripts. Archana also wrote the initial draft of the data quality and data cleaning sections of this report.
+
+**Alisha Agrawal** was primarily responsible for data acquisition, variable selection, the `acquire.py` script, the `analyze.py` visualization script, and report writing. Alisha also coordinated the Snakemake workflow configuration and final documentation.
+
+Both team members contributed to research question development, result interpretation, and review of all written sections. Individual contributions are evidenced in the Git commit history.
