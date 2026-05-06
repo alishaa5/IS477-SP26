@@ -1,0 +1,147 @@
+{
+  "@context": "https://schema.org/",
+  "@type": "Dataset",
+  "name": "College Tuition and Post-Graduation Outcomes: Analyzing the Financial Return on Higher Education",
+  "description": "An integrated dataset combining the U.S. Department of Education College Scorecard, IPEDS Institutional Characteristics (HD2023), and IPEDS Student Financial Aid (SFA2223) to analyze the relationship between college tuition costs, student debt, and post-graduation earnings across U.S. postsecondary institutions.",
+  "url": "https://github.com/alishaa5/IS477-SP26",
+  "identifier": "https://github.com/alishaa5/IS477-SP26/releases/tag/final-project",
+  "version": "1.0.0",
+  "datePublished": "2026-05-05",
+  "dateModified": "2026-05-05",
+  "license": "https://opensource.org/licenses/MIT",
+  "keywords": [
+    "higher education",
+    "college tuition",
+    "student debt",
+    "post-graduation earnings",
+    "College Scorecard",
+    "IPEDS",
+    "data integration",
+    "education policy",
+    "return on investment"
+  ],
+  "creator": [
+    {
+      "@type": "Person",
+      "name": "Alisha Agrawal",
+      "affiliation": {
+        "@type": "Organization",
+        "name": "University of Illinois Urbana-Champaign"
+      }
+    },
+    {
+      "@type": "Person",
+      "name": "Archana Nanthikattu",
+      "affiliation": {
+        "@type": "Organization",
+        "name": "University of Illinois Urbana-Champaign"
+      }
+    }
+  ],
+  "publisher": {
+    "@type": "Organization",
+    "name": "University of Illinois Urbana-Champaign",
+    "url": "https://illinois.edu"
+  },
+  "inLanguage": "en",
+  "encodingFormat": "text/csv",
+  "distribution": [
+    {
+      "@type": "DataDownload",
+      "encodingFormat": "text/csv",
+      "contentUrl": "https://github.com/alishaa5/IS477-SP26/blob/main/data/merged/merged_dataset.csv"
+    }
+  ],
+  "isBasedOn": [
+    {
+      "@type": "Dataset",
+      "name": "College Scorecard Institution-Level Data, Most Recent Cohorts",
+      "publisher": {
+        "@type": "Organization",
+        "name": "U.S. Department of Education"
+      },
+      "url": "https://collegescorecard.ed.gov/data/",
+      "license": "https://www.usa.gov/government-works"
+    },
+    {
+      "@type": "Dataset",
+      "name": "IPEDS Institutional Characteristics Survey 2023 (HD2023)",
+      "publisher": {
+        "@type": "Organization",
+        "name": "National Center for Education Statistics"
+      },
+      "url": "https://nces.ed.gov/ipeds/datacenter/data/HD2023.zip",
+      "license": "https://www.usa.gov/government-works"
+    },
+    {
+      "@type": "Dataset",
+      "name": "IPEDS Student Financial Aid and Net Price Survey 2022-23 (SFA2223)",
+      "publisher": {
+        "@type": "Organization",
+        "name": "National Center for Education Statistics"
+      },
+      "url": "https://nces.ed.gov/ipeds/datacenter/data/SFA2223.zip",
+      "license": "https://www.usa.gov/government-works"
+    }
+  ],
+  "variableMeasured": [
+    {
+      "@type": "PropertyValue",
+      "name": "UNITID",
+      "description": "Unique identification number assigned to each postsecondary institution by the U.S. Department of Education"
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "INSTNM",
+      "description": "Institution name"
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "STABBR",
+      "description": "Two-letter state abbreviation where the institution is located"
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "CONTROL",
+      "description": "Institution control type: 1=Public, 2=Private Nonprofit, 3=Private For-Profit"
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "ICLEVEL",
+      "description": "Institution level: 1=4-year, 2=2-year, 3=Less-than-2-year"
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "TUITIONFEE_IN",
+      "description": "Published in-state tuition and fees in US dollars"
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "TUITIONFEE_OUT",
+      "description": "Published out-of-state tuition and fees in US dollars"
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "DEBT_MDN",
+      "description": "Median cumulative loan debt at graduation in US dollars"
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "MD_EARN_WNE_P10",
+      "description": "Median earnings of students working and not enrolled 10 years after entry, in US dollars"
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "FLOAN_A",
+      "description": "Total dollar amount of federal loans distributed to students at the institution"
+    }
+  ],
+  "spatialCoverage": {
+    "@type": "Place",
+    "name": "United States of America"
+  },
+  "temporalCoverage": "2022/2026",
+  "measurementTechnique": "Administrative data aggregation, federal survey collection",
+  "conditionsOfAccess": "Open access. All source datasets are publicly released U.S. federal government data in the public domain.",
+  "isAccessibleForFree": true
+}
