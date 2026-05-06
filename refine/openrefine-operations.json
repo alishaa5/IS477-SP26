@@ -1,0 +1,170 @@
+[
+  {
+    "op": "core/column-removal",
+    "description": "Remove columns not needed for analysis",
+    "columnName": "ALIAS"
+  },
+  {
+    "op": "core/text-transform",
+    "description": "Trim whitespace from INSTNM column",
+    "engineConfig": {
+      "facets": [],
+      "mode": "row-based"
+    },
+    "columnName": "INSTNM",
+    "expression": "value.trim()",
+    "onError": "keep-original",
+    "repeat": false,
+    "repeatCount": 10
+  },
+  {
+    "op": "core/text-transform",
+    "description": "Trim whitespace from STABBR column",
+    "engineConfig": {
+      "facets": [],
+      "mode": "row-based"
+    },
+    "columnName": "STABBR",
+    "expression": "value.trim()",
+    "onError": "keep-original",
+    "repeat": false,
+    "repeatCount": 10
+  },
+  {
+    "op": "core/text-transform",
+    "description": "Standardize PrivacySuppressed values to blank",
+    "engineConfig": {
+      "facets": [
+        {
+          "type": "text",
+          "name": "DEBT_MDN",
+          "columnName": "DEBT_MDN",
+          "query": "PrivacySuppressed",
+          "mode": "text",
+          "caseSensitive": false,
+          "invert": false
+        }
+      ],
+      "mode": "row-based"
+    },
+    "columnName": "DEBT_MDN",
+    "expression": "null",
+    "onError": "keep-original",
+    "repeat": false,
+    "repeatCount": 10
+  },
+  {
+    "op": "core/text-transform",
+    "description": "Standardize PrivacySuppressed values to blank in MD_EARN_WNE_P10",
+    "engineConfig": {
+      "facets": [
+        {
+          "type": "text",
+          "name": "MD_EARN_WNE_P10",
+          "columnName": "MD_EARN_WNE_P10",
+          "query": "PrivacySuppressed",
+          "mode": "text",
+          "caseSensitive": false,
+          "invert": false
+        }
+      ],
+      "mode": "row-based"
+    },
+    "columnName": "MD_EARN_WNE_P10",
+    "expression": "null",
+    "onError": "keep-original",
+    "repeat": false,
+    "repeatCount": 10
+  },
+  {
+    "op": "core/text-transform",
+    "description": "Standardize PrivacySuppressed values to blank in TUITIONFEE_IN",
+    "engineConfig": {
+      "facets": [
+        {
+          "type": "text",
+          "name": "TUITIONFEE_IN",
+          "columnName": "TUITIONFEE_IN",
+          "query": "PrivacySuppressed",
+          "mode": "text",
+          "caseSensitive": false,
+          "invert": false
+        }
+      ],
+      "mode": "row-based"
+    },
+    "columnName": "TUITIONFEE_IN",
+    "expression": "null",
+    "onError": "keep-original",
+    "repeat": false,
+    "repeatCount": 10
+  },
+  {
+    "op": "core/text-transform",
+    "description": "Standardize PrivacySuppressed values to blank in TUITIONFEE_OUT",
+    "engineConfig": {
+      "facets": [
+        {
+          "type": "text",
+          "name": "TUITIONFEE_OUT",
+          "columnName": "TUITIONFEE_OUT",
+          "query": "PrivacySuppressed",
+          "mode": "text",
+          "caseSensitive": false,
+          "invert": false
+        }
+      ],
+      "mode": "row-based"
+    },
+    "columnName": "TUITIONFEE_OUT",
+    "expression": "null",
+    "onError": "keep-original",
+    "repeat": false,
+    "repeatCount": 10
+  },
+  {
+    "op": "core/column-reorder",
+    "description": "Reorder columns to put key identifiers first",
+    "columnNames": [
+      "UNITID",
+      "INSTNM",
+      "STABBR",
+      "CONTROL",
+      "ICLEVEL",
+      "TUITIONFEE_IN",
+      "TUITIONFEE_OUT",
+      "DEBT_MDN",
+      "MD_EARN_WNE_P10"
+    ]
+  },
+  {
+    "op": "core/row-removal",
+    "description": "Remove rows where all key financial variables are blank",
+    "engineConfig": {
+      "facets": [
+        {
+          "type": "blanks",
+          "name": "TUITIONFEE_IN",
+          "columnName": "TUITIONFEE_IN",
+          "blanksValue": true,
+          "errorValue": true
+        },
+        {
+          "type": "blanks",
+          "name": "DEBT_MDN",
+          "columnName": "DEBT_MDN",
+          "blanksValue": true,
+          "errorValue": true
+        },
+        {
+          "type": "blanks",
+          "name": "MD_EARN_WNE_P10",
+          "columnName": "MD_EARN_WNE_P10",
+          "blanksValue": true,
+          "errorValue": true
+        }
+      ],
+      "mode": "row-based"
+    }
+  }
+]
