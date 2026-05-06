@@ -26,6 +26,15 @@ rule acquire:
         "logs/acquire.log"
     shell:
         "python acquire.py > {log} 2>&1"
+rule profile:
+    input:
+        "data/raw/.acquire_done"
+    output:
+        "results/profile/data_quality_report.csv"
+    log:
+        "logs/profile.log"
+    shell:
+        "python profile.py > {log} 2>&1"
 
 # ── Step 2: Clean each dataset ────────────────────────────────────────────────
 rule clean:
