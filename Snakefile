@@ -30,7 +30,8 @@ rule acquire:
 # ── Step 2: Clean each dataset ────────────────────────────────────────────────
 rule clean:
     input:
-        "data/raw/.acquire_done"
+        "data/raw/.acquire_done",
+        "results/profile/data_quality_report.csv"
     output:
         "data/cleaned/scorecard_clean.csv",
         "data/cleaned/ipeds_chars_clean.csv",
